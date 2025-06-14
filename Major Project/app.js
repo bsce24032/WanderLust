@@ -7,12 +7,12 @@ import methodOverride from "method-override";
 import ejsMate from "ejs-mate";
 import ExpressError from "./utils/ExpressError.js";
 import session from "express-session";
-
+import flash from "connect-flash";
 
 
 import listings from './routes/listing.js'
 import reviews from './routes/review.js'
-import { clear } from "console";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -51,14 +51,18 @@ const sessionOptions = {
   },
 };
 
-
-app.use(session(sessionOptions));
-
-
 app.get("/", (req, res) => {
   res.send("Hello, From Root");
 });
 
+app.use(session(sessionOptions));
+app.use(flash());
+
+app.use((req,res,next)=>{
+  res.locals.sucess = req.flash("sucess");
+  res.locals.error = req.flash("error");
+  next();
+})
 
 
 //listing routes
