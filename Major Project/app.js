@@ -6,12 +6,13 @@ import { dirname } from "path";
 import methodOverride from "method-override";
 import ejsMate from "ejs-mate";
 import ExpressError from "./utils/ExpressError.js";
-
+import session from "express-session";
 
 
 
 import listings from './routes/listing.js'
 import reviews from './routes/review.js'
+import { clear } from "console";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -38,11 +39,25 @@ app.engine("ejs", ejsMate);
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
+
+const sessionOptions = {
+  secret: "mysupersecretcode",
+  resave: false,
+  saveUninitialized: true,
+  cookie:{
+    expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    httpOnly: true
+  },
+};
+
+
+app.use(session(sessionOptions));
+
+
 app.get("/", (req, res) => {
   res.send("Hello, From Root");
 });
-
-
 
 
 
