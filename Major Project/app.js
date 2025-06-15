@@ -8,10 +8,13 @@ import ejsMate from "ejs-mate";
 import ExpressError from "./utils/ExpressError.js";
 import session from "express-session";
 import flash from "connect-flash";
+import passport from "passport";
+import LocalStrategy from "passport-local";
+import User from "./models/user.js"
 
-
-import listings from './routes/listing.js'
-import reviews from './routes/review.js'
+import listingRouter from './routes/listing.js';
+import reviewRouter from './routes/review.js';
+import userRouter from './routes/user.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -58,20 +61,36 @@ app.get("/", (req, res) => {
 app.use(session(sessionOptions));
 app.use(flash());
 
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use((req,res,next)=>{
   res.locals.sucess = req.flash("sucess");
   res.locals.error = req.flash("error");
   next();
 })
 
+// app.get("/demouser",async (req,res)=>{
+//   let fakeUser = new User({
+//     email:"student@gmail.com",
+//     username: "delta-student"
+//   });
+//  let registeredUser =await User.register(fakeUser,"helloworld");
+//  res.send(registeredUser);
+// })
 
 //listing routes
-app.use("/listings",listings);
+app.use("/listings",listingRouter);
 
 //reviews routes
-app.use("/listings/:id/reviews",reviews)
+app.use("/listings/:id/reviews",reviewRouter)
 
-
+// user routes
+app.use("/",userRouter);
 
 
 app.all("/{*splat}", (req, res, next) => {

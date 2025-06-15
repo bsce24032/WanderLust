@@ -14,6 +14,7 @@ pnpm-debug.log*
 
 # OS-specific files
 .DS_Store
+.DS_Store?
 Thumbs.db
 
 # Editor directories and files
