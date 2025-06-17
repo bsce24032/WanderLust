@@ -1,96 +1,36 @@
 import express, { urlencoded } from "express";
 const router = express.Router();
 import wrapAsync from "../utils/wrapAsyc.js";
-import { listingSchema, reviewSchema } from "../schema.js";
-import ExpressError from "../utils/ExpressError.js";
 import Listing from "../models/listing.js";
+import { isLoggedIn, isOwner, validateListing } from "../middleware.js";
+import {
+  createListing,
+  index,
+  renderNewFrom,
+  showListing,
+  renderEditForm,
+  updateListing,
+  destroyListing,
+} from "../controllers/listings.js";
 
-const validateListing = (req, re, next) => {
-  let { error } = listingSchema.validate(req.body);
-  if (error) {
-    let errMsg = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(400, errMsg);
-  } else {
-    next();
-  }
-};
+router
+  .route("/")
+  .get(wrapAsync(index)) // index
+  .post(isLoggedIn, validateListing, wrapAsync(createListing)); //create
 
-//index route
-router.get(
-  "/",
-  wrapAsync(async (req, res) => {
-    const allListings = await Listing.find();
-    res.render("index.ejs", { allListings });
-  })
-);
 
 //new route
-router.get("/new", (req, res) => {
-  res.render("new.ejs");
-});
+router.get("/new", isLoggedIn, renderNewFrom);
 
-//show route
-router.get(
-  "/:id",
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    const listing = await Listing.findById(id).populate("reviews");
-    if (!listing) {
-      req.flash("error", " Listing you requested does not exist! ");
-      return res.redirect("/listings");
-    }
-    res.render("show.ejs", { listing });
-  })
-);
+router
+  .route("/:id")
+  .get(wrapAsync(showListing)) // show
+  .put(isLoggedIn, isOwner, validateListing, wrapAsync(updateListing)) // update
+  .delete(isLoggedIn, isOwner, wrapAsync(destroyListing)); // delete
 
-//create route
-router.post(
-  "/",
-  validateListing,
-  wrapAsync(async (req, res, next) => {
-    const newListing = new Listing(req.body.listing);
-    await newListing.save();
-    req.flash("sucess", " New Listing Created! ");
-    res.redirect("/listings");
-  })
-);
+
 
 //edit route
-router.get(
-  "/:id/edit",
-  wrapAsync(async (req, res) => {
-    const { id } = req.params;
-    const listing = await Listing.findById(id);
-    if (!listing) {
-      req.flash("error", " Listing you requested does not exist! ");
-      return res.redirect("/listings");
-    }
-    res.render("edit.ejs", { listing });
-  })
-);
-
-//update route
-router.put(
-  "/:id",
-  validateListing,
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    await Listing.findByIdAndUpdate(id, { ...req.body.listing });
-    req.flash("sucess", "Listing Updated! ");
-    res.redirect(`/listings/${id}`);
-  })
-);
-
-//delete route
-router.delete(
-  "/:id",
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    let deletedListing = await Listing.findByIdAndDelete(id);
-    // console.log(deletedListing);
-    req.flash("sucess", "Listing Deleted!");
-    res.redirect("/listings");
-  })
-);
+router.get("/:id/edit", isLoggedIn, isOwner, wrapAsync(renderEditForm));
 
 export default router;
