@@ -10,10 +10,12 @@ const createReview = async (req, res) => {
 
     const newReview = new Review(req.body.review);
      newReview.aurthor = req.user._id;
-      listing.reviews.push(newReview._id);  
+      listing.reviews.push(newReview._id); 
+      console.log(newReview) ;
 
     await newReview.save();
     await listing.save();
+    console.log(listing);
     req.flash("sucess"," New Review Created! ");
     res.redirect(`/listings/${listing._id}`);
 }
