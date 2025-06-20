@@ -2,7 +2,7 @@
 
 **WanderLust** is a full-stack travel listing web application where users can explore destinations, create and manage listings, leave reviews, and interact with maps and media. Built with a modern backend stack using **Node.js**, **Express**, **MongoDB**, **Cloudinary**, and **Mapbox**, WanderLust delivers a smooth, responsive, and scalable travel experience for users.
 
-![WanderLust Banner](https://wanderlust-fgn0.onrender.com/listings)
+## https://wanderlust-fgn0.onrender.com/listings
 
 ---
 
