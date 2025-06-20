@@ -82,7 +82,7 @@ npm install
 npm start
 
 
-Open http://localhost:8080 in your browser.
+Open http://localhost:8080/listings in your browser.
 
 
 
