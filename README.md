@@ -35,11 +35,6 @@
 
 ---
 
-## 📸 Screenshots
-
-> _Add screenshots of your app interface here for better presentation._
-
----
 
 ## 📂 Project Structure
 
